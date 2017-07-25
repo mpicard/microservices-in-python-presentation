@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Microservices in Python</title>
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/black.css" id="theme">
+  <link rel="stylesheet" href="lib/tomorrow-night.css">
+  <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.min.css">
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <style>
+    .reveal pre {
+      box-shadow: none;
+      width: auto;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="reveal">
+    <div class="slides">
+
+      <section>
+        <h1>Microservices in Python</h1>
+        <p>"Life is short, you need Python"</p>
+      </section>
+
+      <section>
+        <h2>Motivation</h2>
+        <ul>
+          <li>Clean, consise, readable code</li>
+          <li>Strong TDD and dev tools</li>
+          <li>Reduced lead times</li>
+          <li>Better performance per MB compared to Spring</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Personal Experience</h2>
+        <ul>
+          <li>2+ years of Django REST Framework</li>
+          <li>Large tenanted "microlith"* REST API</li>
+          <li>Several front ends for multiple customers</li>
+        </ul>
+        <small>*It was architected to split in future</small>
+      </section>
+
+      <section>
+        <h2>Demo 1: Django REST Framework</h2>
+
+        <ul>
+          <li>Used and funded by Mozilla, Red Hat, Heroku and Eventbrite.</li>
+          <li>Extensive documentation and large community</li>
+          <li>Powerful out of the box and very flexible</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Django: Models</h2>
+        <pre>
+          <code class="python">
+class Snippet(models.Model):
+    title = models.CharField(max_length=100, blank=True, default='')
+    code = models.TextField()
+    linenos = models.BooleanField(default=False)
+    language = models.CharField(choices=LANGUAGE_CHOICES, max_length=100)
+    style = models.CharField(choices=STYLE_CHOICES, max_length=100)
+          </code>
+        </pre>
+      </section>
+
+      <section>
+        <h2>Django: Model Migrations</h2>
+
+        <pre>
+          <code>
+class Migration(migrations.Migration):
+    initial = True
+    dependencies = []
+    operations = [
+        migrations.CreateModel(
+            name='Snippet',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ...
+            ],
+            options={
+                'ordering': ('created',),
+            },
+        ),
+    ]
+          </code>
+        </pre>
+      </section>
+
+      <section>
+        <h2>Django: Model Migrations</h2>
+
+        <ul>
+          <li>Generate: <pre>python manage.py makemigration app_name</pre></li>
+          <li>Apply: <pre>python manage.py migrate app_name</pre></li>
+          <li>(Rollback) <pre>python manage.py migrate app_name 0001</pre></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Django: ORM</h2>
+
+        <ul>
+          <li>Powerful and customizable relational object manager</li>
+          <li>Pythonic (ie. intuitive) interface</li>
+          <li>filter, count, aggregrate, many to many, reverse relationships, etc</li>
+          <li>please see <a href="https://docs.djangoproject.com/en/1.11/topics/db/queries/">here</a> for more</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>REST Framework: Views</h2>
+
+        <p>Varying levels of abstraction</p>
+        <ul>
+          <li>function</li>
+          <li>APIView class</li>
+          <li>ViewSet (composed of APIViews)</li>
+          <li>ModelViewSet (composed of APIViews and a Model)</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>REST Framework: ModelViewSet</h2>
+
+        <pre>
+          <code>
+from rest_framework.viewsets import ModelViewSet
+
+from snippets.serializers import SnippetSerializer
+from snippets.models import Snippet
+
+
+class SnippetViewSet(ModelViewSet):
+    """
+    Manage short snippets of code of a given language and style with syntax
+    highlighting using pygments.
+    """
+    queryset = Snippet.objects.all()  # this is the ORM query
+    serializer_class = SnippetSerializer
+          </code>
+        </pre>
+      </section>
+
+      <section>
+        <h2>REST Framework: Serializers</h2>
+
+        <pre>
+          <code>
+  class SnippetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Snippet
+        fields = (...)  # Can use a list or '__all__' or use exclude = (...)
+        read_only_fields = ('created', 'updated')
+          </code>
+        </pre>
+      </section>
+
+      <section>
+        <h2>REST Framework: Routing</h2>
+
+        <pre>
+          <code>
+from django.conf.urls import url, include
+from rest_framework.routers import DefaultRouter
+from snippets import views
+
+router = DefaultRouter()
+router.register(r'snippets', views.SnippetViewSet)
+
+urlpatterns = [
+    url(r'^', include(router.urls)),
+    ...
+]
+          </code>
+        </pre>
+      </section>
+
+      <section>
+        <h2>REST Framework: ViewSet endpoints</h2>
+
+        <pre>
+| Method |      URL       |      Name      |     Action     |
+|========|================|================|================|
+| GET    | /snippets/     | snippet-list   | list           |
+| POST   | /snippets/     | snippet-create | create         |
+| GET    | /snippets/{id} | snippet-detail | retrieve       |
+| PUT    | /snippets/{id} | snippet-detail | update         |
+| PATCH  | /snippets/{id} | snippet-detail | partial_update |
+| DELETE | /snippets/{id} | snippet-detail | destroy        |
+        </pre>
+      </section>
+
+      <section>
+        <h2>REST Framework: Demo</h2>
+
+        <a href="http://localhost:8000">http://localhost:8000/</a>
+      </section>
+
+      <section>
+        <h2>Demo 2: Apistar</h2>
+
+        <ul>
+          <li>interactive API documentation generated from your code</li>
+          <li>expressive with type annotations</li>
+          <li>client libraries in python and javascript</li>
+          <li>very very fast and Python 3.5+ only</li>
+          <li>New kid on the block</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Apistar alternatives</h2>
+
+        <ul>
+          <li>Not ready for prime-time</li>
+          <li>Falcon</li>
+          <li>Flask</li>
+          <li>Hug</li>
+          <li>...</li>
+        </ul>
+      </section>
+
+      <section>
+        <ul>
+          <li><i class="fa fa-github fa-fw"></i> <a href="https://github.com/mpicard/microservices-demo-apistar">microservices-demo-apistar</a></li>
+          <li><i class="fa fa-github fa-fw"></i> <a href="https://github.com/mpicard/microservices-demo-apistar">microservices-demo-apistar</a></li>
+        </ul>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/js/reveal.js"></script>
+  <script>
+    Reveal.initialize({
+      controls: false,
+      transition: 'concave',
+      dependencies: [
+        { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+      ]
+    });
+  </script>
+</body>
+
+</html>
