@@ -61,39 +61,15 @@
 
       <section>
         <h2>Django: Models</h2>
+
         <pre>
           <code class="python">
 class Snippet(models.Model):
-    title = models.CharField(max_length=100, blank=True, default='')
+    title = models.CharField()
     code = models.TextField()
-    linenos = models.BooleanField(default=False)
-    language = models.CharField(choices=LANGUAGE_CHOICES, max_length=100)
-    style = models.CharField(choices=STYLE_CHOICES, max_length=100)
-          </code>
-        </pre>
-      </section>
-
-      <section>
-        <h2>Django: Model Migrations</h2>
-
-        <pre>
-          <code>
-class Migration(migrations.Migration):
-    initial = True
-    dependencies = []
-    operations = [
-        migrations.CreateModel(
-            name='Snippet',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ...
-            ],
-            options={
-                'ordering': ('created',),
-            },
-        ),
-    ]
+    linenos = models.BooleanField()
+    language = models.CharField()
+    style = models.CharField()
           </code>
         </pre>
       </section>
@@ -102,9 +78,9 @@ class Migration(migrations.Migration):
         <h2>Django: Model Migrations</h2>
 
         <ul>
-          <li>Generate: <pre>python manage.py makemigration app_name</pre></li>
-          <li>Apply: <pre>python manage.py migrate app_name</pre></li>
-          <li>(Rollback) <pre>python manage.py migrate app_name 0001</pre></li>
+          <li>Generate: <pre>python manage.py makemigration <i>app_name</i></pre></li>
+          <li>Apply: <pre>python manage.py migrate <i>app_name</i></pre></li>
+          <li>(Rollback) <pre>python manage.py migrate <i>app_name migration_id</i></pre></li>
         </ul>
       </section>
 
@@ -144,10 +120,10 @@ from snippets.models import Snippet
 
 class SnippetViewSet(ModelViewSet):
     """
-    Manage short snippets of code of a given language and style with syntax
-    highlighting using pygments.
+    Manage short snippets of code of a given language
+    and style with syntax highlighting using pygments.
     """
-    queryset = Snippet.objects.all()  # this is the ORM query
+    queryset = Snippet.objects.all()  # ORM query
     serializer_class = SnippetSerializer
           </code>
         </pre>
@@ -161,8 +137,8 @@ class SnippetViewSet(ModelViewSet):
   class SnippetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Snippet
-        fields = (...)  # Can use a list or '__all__' or use exclude = (...)
-        read_only_fields = ('created', 'updated')
+        fields = (...)
+        read_only_fields = ('created', 'updated', 'highlight')
           </code>
         </pre>
       </section>
@@ -188,7 +164,7 @@ urlpatterns = [
       </section>
 
       <section>
-        <h2>REST Framework: ViewSet endpoints</h2>
+        <h2>REST Framework: Router Endpoints</h2>
 
         <pre>
 | Method |      URL       |      Name      |     Action     |
@@ -203,40 +179,28 @@ urlpatterns = [
       </section>
 
       <section>
-        <h2>REST Framework: Demo</h2>
+        <h2>Demo</h2>
 
         <a href="http://localhost:8000">http://localhost:8000/</a>
       </section>
 
+
       <section>
-        <h2>Demo 2: Apistar</h2>
+        <h2>Alternatives</h2>
 
         <ul>
-          <li>interactive API documentation generated from your code</li>
-          <li>expressive with type annotations</li>
-          <li>client libraries in python and javascript</li>
-          <li>very very fast and Python 3.5+ only</li>
-          <li><a href="http://localhost:8080/">open demo</a>
+          <li><a href="http://flask.pocoo.org/">Flask</a>: microframework for Python based on Werkzeug, Jinja 2 and good intentions</li>
+          <li><a href="https://falconframework.org/">Falcon</a>: Falcon is a very fast, very minimal Python web framework for building microservices, app backends, and higher-level frameworks.</li>
+          <li><a href="https://github.com/channelcat/sanic">Sanic</a>: Sanic is a Flask-like Python 3.5+ web server that's written to go fast.</li>
+          <li><a href="https://github.com/tomchristie/apistar">API Star</a>: A smart Web API framework, designed for Python 3.</li>
         </ul>
       </section>
 
-      <section>
-        <h2>Apistar alternatives</h2>
-
-        <ul>
-          <li>Not ready for prime-time</li>
-          <li>Falcon</li>
-          <li>Flask</li>
-          <li>Hug</li>
-          <li>...</li>
-        </ul>
-      </section>
 
       <section>
         <ul>
-          <li><i class="fa fa-github fa-fw"></i> <a href="https://github.com/mpicard/microservices-demo-apistar">microservices-demo-apistar</a></li>
-          <li><i class="fa fa-github fa-fw"></i> <a href="https://github.com/mpicard/microservices-demo-apistar">microservices-demo-apistar</a></li>
-          <li><i class="fa fa-github fa-fw"></i> <a href="https://github.com/mpicard/microservices-in-python-presentation">microservices-demo-presentation</a></li>
+          <li><i class="fa fa-github fa-fw"></i> <a href="https://github.com/mpicard/microservices-demo-drf">demo</a></li>
+          <li><i class="fa fa-github fa-fw"></i> <a href="https://github.com/mpicard/microservices-in-python-presentation">presentation</a></li>
         </ul>
       </section>
 
@@ -246,7 +210,6 @@ urlpatterns = [
   <script src="lib/reveal.js/js/reveal.js"></script>
   <script>
     Reveal.initialize({
-      controls: false,
       transition: 'concave',
       dependencies: [
         { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
