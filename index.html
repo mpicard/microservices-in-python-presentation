@@ -35,7 +35,7 @@
           <li>Clean, consise, readable code</li>
           <li>Strong TDD and dev tools</li>
           <li>Reduced lead times</li>
-          <li>Better performance per MB compared to Spring</li>
+          <li>Better performance per MB</li>
         </ul>
       </section>
 
@@ -43,17 +43,16 @@
         <h2>Personal Experience</h2>
         <ul>
           <li>2+ years of Django REST Framework</li>
-          <li>Large tenanted "microlith"* REST API</li>
-          <li>Several front ends for multiple customers</li>
+          <li>Large multi-tenanted "microlith" REST API</li>
+          <li>Multiple front-ends for multiple customers</li>
         </ul>
-        <small>*It was architected to split in future</small>
       </section>
 
       <section>
         <h2>Demo 1: Django REST Framework</h2>
 
         <ul>
-          <li>Used and funded by Mozilla, Red Hat, Heroku and Eventbrite.</li>
+          <li>Used and funded by Mozilla, Red Hat, Heroku, Eventbrite, etc.</li>
           <li>Extensive documentation and large community</li>
           <li>Powerful out of the box and very flexible</li>
         </ul>
@@ -75,12 +74,11 @@ class Snippet(models.Model):
       </section>
 
       <section>
-        <h2>Django: Model Migrations</h2>
+        <h2>Django: Migrations</h2>
 
         <ul>
           <li>Generate: <pre>python manage.py makemigration <i>app_name</i></pre></li>
-          <li>Apply: <pre>python manage.py migrate <i>app_name</i></pre></li>
-          <li>(Rollback) <pre>python manage.py migrate <i>app_name migration_id</i></pre></li>
+          <li>Apply (and rollback): <pre>python manage.py migrate <i>app_name</i></pre></li>
         </ul>
       </section>
 
@@ -90,6 +88,7 @@ class Snippet(models.Model):
         <ul>
           <li>Powerful and customizable relational object manager</li>
           <li>Pythonic (ie. intuitive) interface</li>
+          <li>performant: lazy evaluation, prefetching</li>
           <li>filter, count, aggregrate, many to many, reverse relationships, etc</li>
           <li>see <a href="https://docs.djangoproject.com/en/1.11/topics/db/queries/">here</a> for more</li>
         </ul>
@@ -119,10 +118,6 @@ from snippets.models import Snippet
 
 
 class SnippetViewSet(ModelViewSet):
-    """
-    Manage short snippets of code of a given language
-    and style with syntax highlighting using pygments.
-    """
     queryset = Snippet.objects.all()  # ORM query
     serializer_class = SnippetSerializer
           </code>
@@ -138,7 +133,7 @@ class SnippetViewSet(ModelViewSet):
     class Meta:
         model = Snippet
         fields = (...)
-        read_only_fields = ('created', 'updated', 'highlight')
+        read_only_fields = ('created', 'updated', ...)
           </code>
         </pre>
       </section>
@@ -170,7 +165,7 @@ urlpatterns = [
 | Method |      URL       |      Name      |     Action     |
 |========|================|================|================|
 | GET    | /snippets/     | snippet-list   | list           |
-| POST   | /snippets/     | snippet-create | create         |
+| POST   | /snippets/     | snippet-list   | create         |
 | GET    | /snippets/{id} | snippet-detail | retrieve       |
 | PUT    | /snippets/{id} | snippet-detail | update         |
 | PATCH  | /snippets/{id} | snippet-detail | partial_update |
@@ -179,7 +174,7 @@ urlpatterns = [
       </section>
 
       <section>
-        <h2>Demo</h2>
+        <h2>Demos</h2>
 
         <a href="http://localhost:8000">http://localhost:8000/</a>
       </section>
@@ -199,8 +194,11 @@ urlpatterns = [
 
       <section>
         <ul>
-          <li><i class="fa fa-github fa-fw"></i> <a href="https://github.com/mpicard/microservices-demo-drf">demo</a></li>
-          <li><i class="fa fa-github fa-fw"></i> <a href="https://github.com/mpicard/microservices-in-python-presentation">presentation</a></li>
+          <li><i class="fa fa-github fa-fw"></i> <a href="https://github.com/mpicard/microservices-demo-drf">DRF demo source</a></li>
+          <li><i class="fa fa-github fa-fw"> </i> <a href="https://github.com/mpicard/microservices-demo-sanic">Sanic demo source</a></li>
+          <li><i class="fa fa-bitbucket fa-fw"></i> <a href="https://gssd-stash.isus.emc.com/users/picarm1/repos/py-release-toggles-demo/browse">Relese Toggles demo source</a></li>
+          <li><i class="fa fa-github fa-fw"></i> <a href="https://github.com/mpicard/microservices-in-python-presentation">presentation source</a></li>
+          <li><i class="fa fa-heart-o fa-fw"></i> <a href="https://awesome-python.com/">A curated list of awesome Python resources</a></li>
         </ul>
       </section>
 
@@ -211,9 +209,11 @@ urlpatterns = [
   <script>
     Reveal.initialize({
       transition: 'concave',
-      dependencies: [
-        { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-      ]
+      dependencies: [{
+        src: 'lib/reveal.js/plugin/highlight/highlight.js',
+        async: true,
+        callback: function() { hljs.initHighlightingOnLoad(); }
+      }]
     });
   </script>
 </body>
